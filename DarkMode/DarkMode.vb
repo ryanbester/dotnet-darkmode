@@ -6,6 +6,38 @@ Imports System.Windows.Forms
 ' Library for adding support for Windows 10 dark mode.
 ' Ported from https://github.com/ysc3839/win32-darkmode to be compatible with .NET.
 Public Module DarkMode
+    Public Custom Event ThemeChangedEvent As EventHandler
+        AddHandler(value As EventHandler)
+            _themeChangedHandlers.Add(value)
+        End AddHandler
+
+        RemoveHandler(value As EventHandler)
+            If _themeChangedHandlers.Contains(value)
+                _themeChangedHandlers.Remove(value)
+            End If
+        End RemoveHandler
+
+        RaiseEvent(sender As Object, e As ThemeChangedEventArgs)
+            For Each handler In _themeChangedHandlers
+                Try
+                    handler.Invoke(sender, e)
+                Catch ex As Exception
+
+                End Try
+            Next
+        End RaiseEvent
+    End Event
+
+    Public Class ThemeChangedEventArgs
+        Inherits EventArgs
+
+        Public ReadOnly Property DarkModeEnabled As Boolean
+
+        Public Sub New(darkModeEnabled As Boolean)
+            Me.DarkModeEnabled = darkModeEnabled
+        End Sub
+    End Class
+
 
 #Region "Fields"
 
@@ -29,6 +61,12 @@ Public Module DarkMode
     ''' </summary>
     Private _darkModeEnabled As Boolean = False
 
+    ''' <summary>
+    ''' Stores whether dark mode was enabled when the last theme changed event was raised, to prevent duplicate events
+    ''' being raised.
+    ''' </summary>
+    Private _lastEventState As Boolean = False
+
     ' Function pointers:
     Private _fnOpenNcThemeData As TypeOpenNcThemeData = Nothing ' Ordinal 49
     Private _fnRefreshImmersiveColorPolicyState As TypeRefreshImmersiveColorPolicyState = Nothing ' Ordinal 104
@@ -38,6 +76,8 @@ Public Module DarkMode
     Private _fnAllowDarkModeForApp As TypeAllowDarkModeForApp = Nothing ' Ordinal 135
     Private _fnSetPreferredAppMode As TypeSetPreferredAppMode = Nothing ' Ordinal 135
     Private _fnIsDarkModeAllowedForWindow As TypeIsDarkModeAllowedForWindow = Nothing ' Ordinal 137
+
+    Private _themeChangedHandlers As List(Of EventHandler) = New List (Of EventHandler)()
 
 #End Region
 
@@ -173,10 +213,10 @@ Public Module DarkMode
     ''' <returns>True if the Windows version supports dark mode, or false if it doesn't.</returns>
     Private Function CheckBuildNumber(buildNumber As UInt32) As Boolean
         Return _
-            buildNumber = 17763 Or ' Version 1809 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 18362 Or ' Version 1903 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 18363 Or ' Version 1909 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 19041 Or ' Version 2004 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 17763 Or ' Version 1809 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 18362 Or ' Version 1903 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 18363 Or ' Version 1909 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 19041 Or ' Version 2004 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
             buildNumber = 19042    ' Version 2010
     End Function
 
@@ -310,6 +350,7 @@ Public Module DarkMode
 
                     _darkModeSupported = True
                     _darkModeEnabled = _fnShouldAppsUseDarkMode() And Not SystemInformation.HighContrast
+                    _lastEventState = _darkModeEnabled
                 End If
             Else
                 ' Unsupported Windows version
@@ -393,6 +434,11 @@ Public Module DarkMode
             Case WM_SETTINGCHANGED
                 If IsColourSchemeChangeMessage(m.LParam) Then
                     _darkModeEnabled = _fnShouldAppsUseDarkMode() And Not SystemInformation.HighContrast
+
+                    If _lastEventState <> _darkModeEnabled
+                        _lastEventState = _darkModeEnabled
+                        RaiseEvent ThemeChangedEvent(GetType(DarkMode), New ThemeChangedEventArgs(_darkModeEnabled))
+                    End If
 
                     RefreshTitleBarThemeColour(window.Handle, theme)
 

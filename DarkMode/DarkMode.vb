@@ -59,7 +59,7 @@ Public Module DarkMode
     ''' <summary>
     ''' Whether dark mode has been enabled by the user. Only applicable if the SYSTEM theme is used.
     ''' </summary>
-    Private _darkModeEnabled As Boolean = False
+    Public DarkModeEnabled As Boolean = False
 
     ''' <summary>
     ''' Stores whether dark mode was enabled when the last theme changed event was raised, to prevent duplicate events
@@ -349,8 +349,8 @@ Public Module DarkMode
                    And _fnIsDarkModeAllowedForWindow IsNot Nothing Then
 
                     _darkModeSupported = True
-                    _darkModeEnabled = _fnShouldAppsUseDarkMode() And Not SystemInformation.HighContrast
-                    _lastEventState = _darkModeEnabled
+                    DarkModeEnabled = _fnShouldAppsUseDarkMode() And Not SystemInformation.HighContrast
+                    _lastEventState = DarkModeEnabled
                 End If
             Else
                 ' Unsupported Windows version
@@ -366,7 +366,7 @@ Public Module DarkMode
             Return
         End If
 
-        If _darkModeEnabled
+        If DarkModeEnabled
             SetWindowTheme(btn.Handle, "DarkMode_Explorer", Nothing)
         Else
             SetWindowTheme(btn.Handle, "Explorer", Nothing)
@@ -385,7 +385,7 @@ Public Module DarkMode
             Return
         End If
 
-        If _darkModeEnabled Then
+        If DarkModeEnabled Then
             ' <1903
             If _fnAllowDarkModeForApp IsNot Nothing Then
                 If theme = Theme.SYSTEM Or theme = Theme.DARK Then
@@ -433,11 +433,11 @@ Public Module DarkMode
                 Next
             Case WM_SETTINGCHANGED
                 If IsColourSchemeChangeMessage(m.LParam) Then
-                    _darkModeEnabled = _fnShouldAppsUseDarkMode() And Not SystemInformation.HighContrast
+                    DarkModeEnabled = _fnShouldAppsUseDarkMode() And Not SystemInformation.HighContrast
 
-                    If _lastEventState <> _darkModeEnabled
-                        _lastEventState = _darkModeEnabled
-                        RaiseEvent ThemeChangedEvent(GetType(DarkMode), New ThemeChangedEventArgs(_darkModeEnabled))
+                    If _lastEventState <> DarkModeEnabled
+                        _lastEventState = DarkModeEnabled
+                        RaiseEvent ThemeChangedEvent(GetType(DarkMode), New ThemeChangedEventArgs(DarkModeEnabled))
                     End If
 
                     RefreshTitleBarThemeColour(window.Handle, theme)

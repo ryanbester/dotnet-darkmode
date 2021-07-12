@@ -1,4 +1,4 @@
-﻿' Copyright (C) 2020 Ryan Bester
+﻿' Copyright (C) 2020-2021 Ryan Bester
 
 Imports System.Runtime.InteropServices
 Imports System.Windows.Forms
@@ -213,11 +213,12 @@ Public Module DarkMode
     ''' <returns>True if the Windows version supports dark mode, or false if it doesn't.</returns>
     Private Function CheckBuildNumber(buildNumber As UInt32) As Boolean
         Return _
-            buildNumber = 17763 Or ' Version 1809 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 18362 Or ' Version 1903 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 18363 Or ' Version 1909 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 19041 Or ' Version 2004 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 19042    ' Version 2010
+            buildNumber = 17763 Or ' Version 1809 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 18362 Or ' Version 1903 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 18363 Or ' Version 1909 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 19041 Or ' Version 2004 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 19042 Or ' Version 2010 _
+            buildNumber = 19043    ' Version 21H1
     End Function
 
     ''' <summary>

@@ -213,12 +213,13 @@ Public Module DarkMode
     ''' <returns>True if the Windows version supports dark mode, or false if it doesn't.</returns>
     Private Function CheckBuildNumber(buildNumber As UInt32) As Boolean
         Return _
-            buildNumber = 17763 Or ' Version 1809 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 18362 Or ' Version 1903 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 18363 Or ' Version 1909 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 19041 Or ' Version 2004 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            buildNumber = 19042 Or ' Version 2010 _
-            buildNumber = 19043    ' Version 21H1
+            buildNumber = 17763 Or ' Version 1809 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 18362 Or ' Version 1903 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 18363 Or ' Version 1909 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 19041 Or ' Version 2004 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            buildNumber = 19042 Or ' Version 2010 _ _ _
+            buildNumber = 19043 Or ' Version 21H1 _ _ _
+            buildNumber = 19044 ' Version 21H2
     End Function
 
     ''' <summary>

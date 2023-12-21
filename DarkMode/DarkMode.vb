@@ -219,7 +219,8 @@ Public Module DarkMode
             buildNumber = 19041 Or ' Version 2004 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
             buildNumber = 19042 Or ' Version 2010 _ _ _
             buildNumber = 19043 Or ' Version 21H1 _ _ _
-            buildNumber = 19044 ' Version 21H2
+            buildNumber = 19044 Or ' Version 21H2
+            buildNumber = 19045    ' Version 22H2
     End Function
 
     ''' <summary>

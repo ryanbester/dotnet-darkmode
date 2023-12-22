@@ -1,4 +1,4 @@
-﻿' Copyright (C) 2020-2021 Ryan Bester
+﻿' Copyright (C) 2020-2023 Ryan Bester
 
 Imports System.Runtime.InteropServices
 Imports System.Windows.Forms
@@ -38,6 +38,12 @@ Public Module DarkMode
         End Sub
     End Class
 
+    Public Delegate Sub ThemeControlCallback(control As Control)
+
+    Public Class ControlThemingClasses
+        Public Property LightModeClassName As String
+        Public Property DarkModeClassName As String
+    End Class
 
 #Region "Fields"
 
@@ -79,6 +85,16 @@ Public Module DarkMode
 
     Private _themeChangedHandlers As List(Of EventHandler) = New List (Of EventHandler)()
 
+    ''' <summary>
+    ''' Contains a dictionary of default control classes for each control type.
+    ''' </summary>
+    Private _controlClasses As Dictionary(Of Type, ControlThemingClasses) = New Dictionary(Of Type, ControlThemingClasses) From
+    {
+        {GetType(Button), New ControlThemingClasses() With {
+        .LightModeClassName = "Explorer",
+        .DarkModeClassName = "DarkMode_Explorer"
+        }}
+    }
 #End Region
 
 #Region "Constants"
@@ -364,23 +380,44 @@ Public Module DarkMode
         Return True
     End Function
 
-    Private Sub SetButtonStyle(btn As Button)
-        If Not InitDarkMode()
+    ''' <summary>
+    ''' Gets the default classes for a control.
+    ''' </summary>
+    ''' <param name="controlType">The type of the control</param>
+    ''' <returns>The classes</returns>
+    Public Function GetDefaultControlClasses(controlType As Type) As ControlThemingClasses
+        Dim themingClasses As New ControlThemingClasses()
+        If _controlClasses.TryGetValue(controlType, themingClasses) Then
+            Return themingClasses
+        End If
+
+        Return Nothing
+    End Function
+
+    ''' <summary>
+    ''' Sets the classes for a control.
+    ''' </summary>
+    ''' <param name="ctl">The contorl</param>
+    ''' <param name="themingClasses">The classes to set</param>
+    Public Sub SetControlClasses(ctl As Control, themingClasses As ControlThemingClasses)
+        If Not InitDarkMode() Then
             Return
         End If
 
-        If DarkModeEnabled
-            SetWindowTheme(btn.Handle, "DarkMode_Explorer", Nothing)
-        Else
-            SetWindowTheme(btn.Handle, "Explorer", Nothing)
+        If themingClasses IsNot Nothing Then
+            If DarkModeEnabled Then
+                SetWindowTheme(ctl.Handle, themingClasses.DarkModeClassName, Nothing)
+            Else
+                SetWindowTheme(ctl.Handle, themingClasses.LightModeClassName, Nothing)
+            End If
         End If
 
         If _fnAllowDarkModeForWindow IsNot Nothing Then
-            _fnAllowDarkModeForWindow(btn.Handle, True)
+            _fnAllowDarkModeForWindow(ctl.Handle, True)
         End If
 
-        SendMessage(btn.Handle, WM_THEMECHANGED, 0, 0)
-        btn.Invalidate()
+        SendMessage(ctl.Handle, WM_THEMECHANGED, 0, 0)
+        ctl.Invalidate()
     End Sub
 
     Public Sub SetAppTheme(theme As Theme)
@@ -415,6 +452,12 @@ Public Module DarkMode
     End Sub
 
     Public Sub WndProc(window As Form, m As Message, theme As Theme)
+        WndProc(window, m, theme, Sub(control As Control)
+                                      SetControlClasses(control, GetDefaultControlClasses(control.GetType()))
+                                  End Sub)
+    End Sub
+
+    Public Sub WndProc(window As Form, m As Message, theme As Theme, themeControlCallback As ThemeControlCallback)
         If Not InitDarkMode() Then
             Return
         End If
@@ -427,30 +470,28 @@ Public Module DarkMode
 
                 RefreshTitleBarThemeColour(m.HWnd, theme)
 
+                themeControlCallback(window)
+
                 ' Enable dark mode for controls
-                For Each control As Control in window.Controls
-                    If control.GetType() Is GetType(Button)
-                        ' Theme button
-                        SetButtonStyle(CType(control, Button))
-                    End If
+                For Each control As Control In window.Controls
+                    themeControlCallback(control)
                 Next
             Case WM_SETTINGCHANGED
                 If IsColourSchemeChangeMessage(m.LParam) Then
                     DarkModeEnabled = _fnShouldAppsUseDarkMode() And Not SystemInformation.HighContrast
 
-                    If _lastEventState <> DarkModeEnabled
+                    If _lastEventState <> DarkModeEnabled Then
                         _lastEventState = DarkModeEnabled
                         RaiseEvent ThemeChangedEvent(GetType(DarkMode), New ThemeChangedEventArgs(DarkModeEnabled))
                     End If
 
                     RefreshTitleBarThemeColour(window.Handle, theme)
 
+                    themeControlCallback(window)
+
                     ' Update control theme
                     For Each control As Control In window.Controls
-                        If control.GetType() Is GetType(Button)
-                            ' Theme button
-                            SetButtonStyle(CType(control, Button))
-                        End If
+                        themeControlCallback(control)
                     Next
                 End If
         End Select

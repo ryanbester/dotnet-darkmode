@@ -6,13 +6,14 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-	  <PackageVersion>1.0.3</PackageVersion>
+	  <PackageVersion>1.1.0</PackageVersion>
     <Authors>Ryan Bester</Authors>
     <PackageTags>darkmode, dotnet, dark</PackageTags>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/ryanbester/dotnet-darkmode</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/ryanbester/dotnet-darkmode</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DocumentationFile>DarkMode.xml</DocumentationFile>
@@ -58,5 +59,8 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>

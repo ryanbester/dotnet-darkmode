@@ -93,6 +93,14 @@ Public Module DarkMode
         {GetType(Button), New ControlThemingClasses() With {
         .LightModeClassName = "Explorer",
         .DarkModeClassName = "DarkMode_Explorer"
+        }},
+        {GetType(HScrollBar), New ControlThemingClasses() With {
+        .LightModeClassName = "Explorer",
+        .DarkModeClassName = "DarkMode_Explorer"
+        }},
+        {GetType(VScrollBar), New ControlThemingClasses() With {
+        .LightModeClassName = "Explorer",
+        .DarkModeClassName = "DarkMode_Explorer"
         }}
     }
 #End Region
@@ -448,7 +456,6 @@ Public Module DarkMode
                 _fnRefreshImmersiveColorPolicyState()
             End If
         End If
-        'TODO: FixDarkScrollbar()
     End Sub
 
     Public Sub WndProc(window As Form, m As Message, theme As Theme)

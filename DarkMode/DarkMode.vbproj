@@ -6,7 +6,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-	  <PackageVersion>1.1.0</PackageVersion>
+	  <PackageVersion>1.1.1</PackageVersion>
     <Authors>Ryan Bester</Authors>
     <PackageTags>darkmode, dotnet, dark</PackageTags>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>

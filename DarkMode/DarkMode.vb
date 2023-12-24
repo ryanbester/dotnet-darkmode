@@ -389,6 +389,15 @@ Public Module DarkMode
     End Function
 
     ''' <summary>
+    ''' Whether dark mode is enabled or not, respective of the current theme.
+    ''' </summary>
+    ''' <param name="theme">The current theme</param>
+    ''' <returns>Whether dak mode is enabled</returns>
+    Public Function DarkModeEnableTheme(theme As Theme)
+        Return (theme = Theme.SYSTEM AndAlso DarkModeEnabled) OrElse theme = Theme.DARK
+    End Function
+
+    ''' <summary>
     ''' Gets the default classes for a control.
     ''' </summary>
     ''' <param name="controlType">The type of the control</param>
@@ -407,13 +416,14 @@ Public Module DarkMode
     ''' </summary>
     ''' <param name="ctl">The contorl</param>
     ''' <param name="themingClasses">The classes to set</param>
-    Public Sub SetControlClasses(ctl As Control, themingClasses As ControlThemingClasses)
+    ''' <param name="theme">The theme</param>
+    Public Sub SetControlClasses(ctl As Control, themingClasses As ControlThemingClasses, theme As Theme)
         If Not InitDarkMode() Then
             Return
         End If
 
         If themingClasses IsNot Nothing Then
-            If DarkModeEnabled Then
+            If DarkModeEnableTheme(theme) Then
                 SetWindowTheme(ctl.Handle, themingClasses.DarkModeClassName, Nothing)
             Else
                 SetWindowTheme(ctl.Handle, themingClasses.LightModeClassName, Nothing)
@@ -458,13 +468,13 @@ Public Module DarkMode
         End If
     End Sub
 
-    Public Sub WndProc(window As Form, m As Message, theme As Theme)
+    Public Sub WndProc(window As Control, m As Message, theme As Theme)
         WndProc(window, m, theme, Sub(control As Control)
-                                      SetControlClasses(control, GetDefaultControlClasses(control.GetType()))
+                                      SetControlClasses(control, GetDefaultControlClasses(control.GetType()), theme)
                                   End Sub)
     End Sub
 
-    Public Sub WndProc(window As Form, m As Message, theme As Theme, themeControlCallback As ThemeControlCallback)
+    Public Sub WndProc(window As Control, m As Message, theme As Theme, themeControlCallback As ThemeControlCallback)
         If Not InitDarkMode() Then
             Return
         End If
@@ -504,7 +514,7 @@ Public Module DarkMode
         End Select
     End Sub
 
-    Public Sub UpdateWindowTheme(window As Form, theme As Theme)
+    Public Sub UpdateWindowTheme(window As Control, theme As Theme)
         RefreshTitleBarThemeColour(window.Handle, theme)
 
         ' Make window inactive and active again to refresh title bar colour.

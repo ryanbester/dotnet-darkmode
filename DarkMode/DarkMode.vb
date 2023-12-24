@@ -392,8 +392,8 @@ Public Module DarkMode
     ''' Whether dark mode is enabled or not, respective of the current theme.
     ''' </summary>
     ''' <param name="theme">The current theme</param>
-    ''' <returns>Whether dak mode is enabled</returns>
-    Public Function DarkModeEnableTheme(theme As Theme)
+    ''' <returns>Whether dark mode is enabled</returns>
+    Public Function DarkModeEnabledTheme(theme As Theme) As Boolean
         Return (theme = Theme.SYSTEM AndAlso DarkModeEnabled) OrElse theme = Theme.DARK
     End Function
 
@@ -414,16 +414,16 @@ Public Module DarkMode
     ''' <summary>
     ''' Sets the classes for a control.
     ''' </summary>
-    ''' <param name="ctl">The contorl</param>
+    ''' <param name="ctl">The control</param>
     ''' <param name="themingClasses">The classes to set</param>
-    ''' <param name="theme">The theme</param>
+    ''' <param name="theme">The current theme</param>
     Public Sub SetControlClasses(ctl As Control, themingClasses As ControlThemingClasses, theme As Theme)
         If Not InitDarkMode() Then
             Return
         End If
 
         If themingClasses IsNot Nothing Then
-            If DarkModeEnableTheme(theme) Then
+            If DarkModeEnabledTheme(theme) Then
                 SetWindowTheme(ctl.Handle, themingClasses.DarkModeClassName, Nothing)
             Else
                 SetWindowTheme(ctl.Handle, themingClasses.LightModeClassName, Nothing)
